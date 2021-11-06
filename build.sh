@@ -20,7 +20,17 @@ MEMORY="GPU_MEM = \"16\""
 
 
 #Add any packages needed 
-ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"qt3d \
+
+#Add wifi support
+DISTRO_F="DISTRO_FEATURES_append = \"bluez5 bluetooth wifi\""
+
+#features
+IMAGE_ADD="IMAGE_INSTALL_append = \" qtbase \
+    qtbase-dev \
+    qtbase-mkspecs \
+    qtbase-plugins \
+    qtbase-tools \
+    qt3d \
     qt3d-dev \
     qt3d-mkspecs \
     qtcharts \
@@ -35,13 +45,8 @@ ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"qt3d \
     qtdeclarative-dev \
     qtdeclarative-mkspecs \
     qtgraphicaleffects \
-    qtgraphicaleffects-dev \""
-
-#Add wifi support
-DISTRO_F="DISTRO_FEATURES_append = \"wifi\""
-
-#features
-IMAGE_ADD="IMAGE_INSTALL_append = \"qtbase \
+    qtgraphicaleffects-dev \
+    qtbase \
     qtbase-dev \
     qtbase-mkspecs \
     qtbase-plugins \
@@ -70,8 +75,8 @@ local_image_info=$?
 cat conf/local.conf | grep "${MEMORY}" > /dev/null
 local_memory_info=$?
 
-cat conf/local.conf | grep "${ADD_PACK}" > /dev/null
-local_pack_info=$?
+#cat conf/local.conf | grep "${ADD_PACK}" > /dev/null
+#local_pack_info=$?
 
 cat conf/local.conf | grep "${DISTRO_F}" > /dev/null
 local_distro_info=$?
@@ -111,12 +116,12 @@ else
 fi
 
 
-if [ $local_pack_info -ne 0 ];then
-    echo "Append ${ADD_PACK} in the local.conf file"
-	echo ${ADD_PACK} >> conf/local.conf
-else
-	echo "${ADD_PACK} already exists in the local.conf file"
-fi
+#if [ $local_pack_info -ne 0 ];then
+#    echo "Append ${ADD_PACK} in the local.conf file"
+#	echo ${ADD_PACK} >> conf/local.conf
+#else
+#	echo "${ADD_PACK} already exists in the local.conf file"
+#fi
 
 
 if [ $local_distro_info -ne 0 ];then
@@ -157,7 +162,7 @@ bitbake-layers show-layers | grep "meta-gui" > /dev/null
 layer_info=$?
 
 bitbake-layers show-layers | grep "meta-raspberrypi" > /dev/null
-layer_info=$?
+layer_raspberrypi_info=$?
 
 bitbake-layers show-layers | grep "meta-python" > /dev/null
 layer_python_info=$?
@@ -169,10 +174,10 @@ bitbake-layers show-layers | grep "meta-networking" > /dev/null
 layer_networking_info=$?
 
 bitbake-layers show-layers | grep "meta-multimedia" > /dev/null
-layer_networking_info=$?
+layer_multimedia_info=$?
 
 bitbake-layers show-layers | grep "meta-qt5" > /dev/null
-layer_networking_info=$?
+layer_qt5_info=$?
 
 
 if [ $layer_info -ne 0 ];then
