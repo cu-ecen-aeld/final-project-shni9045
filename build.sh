@@ -25,12 +25,14 @@ ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui\""
 #Add wifi support
 DISTRO_F="DISTRO_FEATURES:append = \"bluetooth wifi\""
 
-#features
-IMAGE_ADD="IMAGE_INSTALL:append = \" qtbase \
+MY_TOOLS = " \
+    qtbase \
     qtbase-dev \
     qtbase-mkspecs \
     qtbase-plugins \
     qtbase-tools \
+"
+MY_PKGS = " \
     qt3d \
     qt3d-dev \
     qt3d-mkspecs \
@@ -47,17 +49,26 @@ IMAGE_ADD="IMAGE_INSTALL:append = \" qtbase \
     qtdeclarative-mkspecs \
     qtgraphicaleffects \
     qtgraphicaleffects-dev \
+"
+MY_FEATURES = " \
     linux-firmware-bcm43430 \
     bluez5 \
     i2c-tools \
-    python-smbus 
+    python-smbus \
     bridge-utils \
     hostapd \
     dhcp-server \
     iptables \
-    wpa-supplicant \""
+    wpa-supplicant \
+"
+
+#features
+IMAGE_ADD="IMAGE_INSTALL:append = " \
+    ${MY_TOOLS} \
+    ${MY_PKGS} \
+    ${MY_FEATURES} \"
     
-#python-smbus \   
+#python-smbus  
 
 IMAGE_F="IMAGE_FEATURES += \"ssh-server-openssh tools-sdk tools-debug\""
 
