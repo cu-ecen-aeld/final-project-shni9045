@@ -23,10 +23,10 @@ MEMORY="GPU_MEM = \"16\""
 ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui\""
 
 #Add wifi support
-DISTRO_F="DISTRO_FEATURES_append = \"bluetooth wifi\""
+DISTRO_F="DISTRO_FEATURES:append = \"bluetooth wifi\""
 
 #features
-IMAGE_ADD="IMAGE_INSTALL_append = \" qtbase \
+IMAGE_ADD="IMAGE_INSTALL:append = \" qtbase \
     qtbase-dev \
     qtbase-mkspecs \
     qtbase-plugins \
@@ -50,14 +50,14 @@ IMAGE_ADD="IMAGE_INSTALL_append = \" qtbase \
     linux-firmware-bcm43430 \
     bluez5 \
     i2c-tools \
-    python-smbus \
+    python-smbus 
     bridge-utils \
     hostapd \
     dhcp-server \
     iptables \
     wpa-supplicant \""
     
-    
+#python-smbus \   
 
 IMAGE_F="IMAGE_FEATURES += \"ssh-server-openssh tools-sdk tools-debug\""
 

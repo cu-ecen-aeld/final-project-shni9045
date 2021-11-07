@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 # I want to make sure these get installed too.
 DEPENDS += "qtbase qtdeclarative qtquickcontrols2"
 SRCREV = "${AUTOREV}"
-SRC_URI = "git://github.com/shigmas/BasicQuick.git;protocol=http"
+SRC_URI = "git://github.com/shigmas/BasicQuick.git;protocol=https"
 
 S = "${WORKDIR}/git"
 
