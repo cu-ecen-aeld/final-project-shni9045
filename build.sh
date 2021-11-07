@@ -20,9 +20,10 @@ MEMORY="GPU_MEM = \"16\""
 
 
 #Add any packages needed 
+ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui\""
 
 #Add wifi support
-DISTRO_F="DISTRO_FEATURES_append = \"bluez5 bluetooth wifi\""
+DISTRO_F="DISTRO_FEATURES_append = \"bluetooth wifi\""
 
 #features
 IMAGE_ADD="IMAGE_INSTALL_append = \" qtbase \
@@ -46,11 +47,6 @@ IMAGE_ADD="IMAGE_INSTALL_append = \" qtbase \
     qtdeclarative-mkspecs \
     qtgraphicaleffects \
     qtgraphicaleffects-dev \
-    qtbase \
-    qtbase-dev \
-    qtbase-mkspecs \
-    qtbase-plugins \
-    qtbase-tools \
     linux-firmware-bcm43430 \
     bluez5 \
     i2c-tools \
@@ -159,10 +155,10 @@ fi
 
 
 bitbake-layers show-layers | grep "meta-gui" > /dev/null
-layer_info=$?
+layer_gui_info=$?
 
 bitbake-layers show-layers | grep "meta-raspberrypi" > /dev/null
-layer_raspberrypi_info=$?
+layer_info=$?
 
 bitbake-layers show-layers | grep "meta-python" > /dev/null
 layer_python_info=$?
@@ -233,7 +229,5 @@ else
 fi
 
 
-
-
 set -e
-bitbake core-image-base
+bitbake core-image-sato
