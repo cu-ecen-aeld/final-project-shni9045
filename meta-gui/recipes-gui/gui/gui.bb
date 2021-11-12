@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 # I want to make sure these get installed too.
 DEPENDS += "qtbase qtdeclarative qtquickcontrols2"
 
-#PV = "1.0+git$(SRCPV)" 
+PV = "1.0+git${SRCPV}"
 SRC_URI = "git://git@github.com/cu-ecen-aeld/final-project-chth2844.git;protocol=ssh;branch=main"
 SRCREV = "${AUTOREV}"
 
