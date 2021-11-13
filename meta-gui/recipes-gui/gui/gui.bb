@@ -1,4 +1,3 @@
-
 SUMMARY = "Simple Qt5 Quick application"
 SECTION = "examples"
 LICENSE = "MIT"

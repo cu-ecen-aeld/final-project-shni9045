@@ -23,7 +23,7 @@ MEMORY="GPU_MEM = \"16\""
 ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui\""
 
 #Add wifi support
-DISTRO_F="DISTRO_FEATURES:append = \"bluetooth wifi\""
+DISTRO_F="DISTRO_FEATURES:append = \"wifi\""
 
 MY_TOOLS = " \
     qtbase \
