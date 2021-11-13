@@ -20,7 +20,7 @@ MEMORY="GPU_MEM = \"16\""
 
 
 #Add any packages needed 
-ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui custom\""
+ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui\""
 
 #Add wifi support
 DISTRO_F="DISTRO_FEATURES:append = \"wifi\""
@@ -243,15 +243,15 @@ else
 	echo "meta-gui layer already exists"
 fi
 
-bitbake-layers show-layers | grep "meta-custom" > /dev/null
-layer_info=$?
+#bitbake-layers show-layers | grep "meta-custom" > /dev/null
+#layer_info=$?
 
-if [ $layer_info -ne 0 ];then
-	echo "Adding meta-custom layer"
-	bitbake-layers add-layer ../meta-custom
-else
-	echo "meta-custom layer already exists"
-fi
+#if [ $layer_info -ne 0 ];then
+#	echo "Adding meta-custom layer"
+#	bitbake-layers add-layer ../meta-custom
+#else
+#	echo "meta-custom layer already exists"
+#fi
 
 
 set -e
