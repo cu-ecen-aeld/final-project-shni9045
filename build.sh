@@ -25,14 +25,13 @@ ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui gpio\""
 #Add wifi support
 DISTRO_F="DISTRO_FEATURES:append = \"wifi\""
 
-MY_TOOLS = " \
-    qtbase \
+
+    
+IMAGE_ADD="IMAGE_INSTALL:append =  \"qtbase \
     qtbase-dev \
     qtbase-mkspecs \
     qtbase-plugins \
     qtbase-tools \
-"
-MY_PKGS = " \
     qt3d \
     qt3d-dev \
     qt3d-mkspecs \
@@ -49,24 +48,13 @@ MY_PKGS = " \
     qtdeclarative-mkspecs \
     qtgraphicaleffects \
     qtgraphicaleffects-dev \
-"
-MY_FEATURES = " \
     linux-firmware-bcm43430 \
     bluez5 \
     i2c-tools \
-    python-smbus \
     bridge-utils \
     hostapd \
-    dhcp-server \
     iptables \
-    wpa-supplicant \
-"
-
-#features
-IMAGE_ADD="IMAGE_INSTALL:append = " \
-    ${MY_TOOLS} \
-    ${MY_PKGS} \
-    ${MY_FEATURES} \"
+    wpa-supplicant \""
     
 #python-smbus  
 
@@ -243,15 +231,15 @@ else
 	echo "meta-gui layer already exists"
 fi
 
-#bitbake-layers show-layers | grep "meta-custom" > /dev/null
-#layer_info=$?
+bitbake-layers show-layers | grep "meta-custom" > /dev/null
+layer_info=$?
 
-#if [ $layer_info -ne 0 ];then
-#	echo "Adding meta-custom layer"
-#	bitbake-layers add-layer ../meta-custom
-#else
-#	echo "meta-custom layer already exists"
-#fi
+if [ $layer_info -ne 0 ];then
+	echo "Adding meta-custom layer"
+	bitbake-layers add-layer ../meta-custom
+else
+	echo "meta-custom layer already exists"
+fi
 
 bitbake-layers show-layers | grep "meta-gpio" > /dev/null
 layer_info=$?
