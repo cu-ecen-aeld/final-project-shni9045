@@ -1,10 +1,10 @@
 
-/* blink.c
+/* Source file containing implementation for reading & writing to Raspberry Pi Pin
  *
- * Raspberry Pi GPIO example using sysfs interface.
- * Guillermo A. Amaral B. <g@maral.me>
+ * Attributes : Raspberry Pi GPIO example using sysfs interface.
+ *              Guillermo A. Amaral B. <g@maral.me>
+ *              https://github.com/dbetz/p1load/blob/master/gpio_sysfs.c
  *
- * This file blinks GPIO 4 (P1-07) while reading GPIO 24 (P1_18).
  */
 
 #include <sys/stat.h>
@@ -14,19 +14,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+/* Macro Definitions*/
+
 #define IN  0
 #define OUT 1
 
 #define LOW  0
 #define HIGH 1
 
-#define PIN  20 
-#define POUT 21 
+#define PIN  20            // GPIO N0 20
 
-static int
-GPIOExport(int pin)
+#define POUT 21            // GPIO NO 21
+
+static int GPIOExport(int pin)
 {
-#define BUFFER_MAX 3
+        #define BUFFER_MAX 3
 	char buffer[BUFFER_MAX];
 	ssize_t bytes_written;
 	int fd;
@@ -43,8 +46,7 @@ GPIOExport(int pin)
 	return(0);
 }
 
-static int
-GPIOUnexport(int pin)
+static int GPIOUnexport(int pin)
 {
 	char buffer[BUFFER_MAX];
 	ssize_t bytes_written;
@@ -62,12 +64,11 @@ GPIOUnexport(int pin)
 	return(0);
 }
 
-static int
-GPIODirection(int pin, int dir)
+static int GPIODirection(int pin, int dir)
 {
 	static const char s_directions_str[]  = "in\0out";
 
-#define DIRECTION_MAX 35
+        #define DIRECTION_MAX 35
 	char path[DIRECTION_MAX];
 	int fd;
 
@@ -87,10 +88,10 @@ GPIODirection(int pin, int dir)
 	return(0);
 }
 
-static int
-GPIORead(int pin)
+static int GPIORead(int pin)
 {
-#define VALUE_MAX 30
+        
+        #define VALUE_MAX 30
 	char path[VALUE_MAX];
 	char value_str[3];
 	int fd;
@@ -112,8 +113,7 @@ GPIORead(int pin)
 	return(atoi(value_str));
 }
 
-static int
-GPIOWrite(int pin, int value)
+static int GPIOWrite(int pin, int value)
 {
 	static const char s_values_str[] = "01";
 
@@ -136,8 +136,7 @@ GPIOWrite(int pin, int value)
 	return(0);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int repeat = 10;
 

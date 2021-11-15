@@ -175,6 +175,16 @@ else
 fi
 
 
+bitbake-layers show-layers | grep "meta-oe" > /dev/null
+layer_info=$?
+
+if [ $layer_info -ne 0 ];then
+    echo "Adding meta-oe layer"
+	bitbake-layers add-layer ../meta-openembedded/meta-oe
+else
+	echo "layer meta-oe already exists"
+fi
+
 bitbake-layers show-layers | grep "meta-python" > /dev/null
 layer_info=$?
 
@@ -186,16 +196,6 @@ else
 	echo "layer meta-python already exists"
 fi
 
-
-bitbake-layers show-layers | grep "meta-oe" > /dev/null
-layer_info=$?
-
-if [ $layer_info -ne 0 ];then
-    echo "Adding meta-oe layer"
-	bitbake-layers add-layer ../meta-openembedded/meta-oe
-else
-	echo "layer meta-oe already exists"
-fi
 
 
 bitbake-layers show-layers | grep "meta-networking" > /dev/null
