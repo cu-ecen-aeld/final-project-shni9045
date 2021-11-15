@@ -8,17 +8,19 @@ DEPENDS += "qtbase"
 RDEPENDS_${PN} += "qtwayland"
 
 
-#FILES_${PN} += "${bindir}/qtexample"
+FILES_${PN} += "${bindir}/qtexample"
 
 S = "${WORKDIR}"
 
 
+
+do_install:append () {
+
+    install -d ${D}${bindir}
+    install -m 0755 ${S}/qtexample ${D}${bindir}/	
+
+}
+
+
+
 inherit qmake5
-
-#do_install () {
-
-#    install -d ${D}${bindir}
-#    install -m 0755 ${S}/qtexample ${D}${bindir}/	
-
-#}
-

@@ -20,7 +20,16 @@ MEMORY="GPU_MEM = \"16\""
 
 
 #Add any packages needed 
-ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui gpio\""
+ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui gpio custom\""
+
+
+# Add I2C 
+MODULE_I2C="ENABLE_I2C = \"1\""
+
+
+# Autoload I2C_MODULE
+AUTOLOAD_I2C="KERNEL_MODULE_AUTOLOAD:rpi += \"i2c-dev i2c-bcm2708\""
+
 
 #Add wifi support
 DISTRO_F="DISTRO_FEATURES:append = \"wifi\""
@@ -85,6 +94,12 @@ local_licn_info=$?
 cat conf/local.conf | grep "${IMAGE_F}" > /dev/null
 local_imgf_info=$?
 
+cat conf/local.conf | grep "${MODULE_I2C}" > /dev/null
+local_i2c_info=$?
+
+cat conf/local.conf | grep "${AUTOLOAD_I2C}" > /dev/null
+local_i2c_autoload_info=$?
+
 
 if [ $local_conf_info -ne 0 ];then
 	echo "Append ${CONFLINE} in the local.conf file"
@@ -148,6 +163,21 @@ if [ $local_imgf_info -ne 0 ];then
 	echo ${IMAGE_F} >> conf/local.conf
 else
 	echo "${IMAGE_F} already exists in the local.conf file"
+fi
+
+
+if [ $local_i2c_info -ne 0 ];then
+        echo "Append ${MODULE_I2C} in the local.conf file"
+        echo ${MODULE_I2C} >> conf/local.conf
+else
+        echo "${MODULE_I2C} already exists in the local.conf file"
+fi
+
+if [ $local_i2c_autoload_info -ne 0 ];then
+        echo "Append ${AUTOLOAD_I2C} in the local.conf file"
+        echo ${AUTOLOAD_I2C} >> conf/local.conf
+else
+        echo "${AUTOLOAD_I2C} already exists in the local.conf file"
 fi
 
 
