@@ -1,2 +1,2 @@
-QT += core
+QT += core widgets 
 SOURCES += qtexample.cpp

@@ -1,10 +1,13 @@
-#include <QCoreApplication>
+#include <QApplication>
+#include <QPushButton>
 #include <QDebug>
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
-    
-    qDebug() << "Hello World";
+    QApplication a( argc, argv );
 
+    QPushButton hello( "Hello world!", 0 );
+    hello.resize( 100, 30 );
+
+    hello.show();
     return a.exec();
 }
