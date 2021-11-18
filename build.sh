@@ -20,7 +20,7 @@ MEMORY="GPU_MEM = \"16\""
 
 
 #Add any packages needed 
-ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui gpio custom\""
+ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"gui gpio custom temperature\""
 
 
 # Add I2C 
@@ -279,6 +279,16 @@ if [ $layer_info -ne 0 ];then
 	bitbake-layers add-layer ../meta-gpio
 else
 	echo "meta-gpiolayer already exists"
+fi
+
+bitbake-layers show-layers | grep "meta-temperature" > /dev/null
+layer_info=$?
+
+if [ $layer_info -ne 0 ];then
+	echo "Adding meta-temperature layer"
+	bitbake-layers add-layer ../meta-temperature
+else
+	echo "meta-temperature layer already exists"
 fi
 
 

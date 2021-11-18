@@ -1,13 +1,23 @@
 #include <QApplication>
+#include <QMainWindow>
 #include <QPushButton>
 #include <QDebug>
+#include <QLabel>
+
 int main(int argc, char *argv[])
 {
     QApplication a( argc, argv );
 
-    QPushButton hello( "Hello world!", 0 );
+    QMainWindow mainWindow;
+
+    QLabel *label = new QLabel(&mainWindow);
+    label->setText("AESD FINAL PROJECT\@shrikantnimhan");
+
+
+    QPushButton hello( "Hello world!", &mainWindow);
     hello.resize( 100, 30 );
 
-    hello.show();
+    mainWindow.show();
+
     return a.exec();
 }
