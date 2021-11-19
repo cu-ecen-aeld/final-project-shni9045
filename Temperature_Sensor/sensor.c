@@ -23,7 +23,7 @@
 #define MLX90614_DEVICE_ADDRESS		(0x5A)
 #define I2C_DEV_PATH 			("/dev/i2c-1")
 
-#define SLEEP_DURATION 			(1000000)
+#define SLEEP_DURATION 			(750000)
 
 
 #ifndef I2C_SMBUS_READ 
@@ -37,6 +37,10 @@ typedef union i2c_smbus_data i2c_data;
 
 int main()
 {
+
+    int fd,wbytes;
+   
+     
     int fdev = open(I2C_DEV_PATH, O_RDWR); // open i2c bus
 
     if (fdev < 0) {
@@ -67,6 +71,8 @@ int main()
         .size = I2C_SMBUS_WORD_DATA,
         .data = &data
     };
+    
+    char print_buffer[20];
 
     while(1)
     {
@@ -80,6 +86,25 @@ int main()
 	double temp = (double) data.word;
     	temp = (temp * 0.02)-0.01;
     	temp = temp - 273.15;
+    	
+    	fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
+        if(fd<0){
+
+         return -1;
+       }
+       
+       sprintf(print_buffer,"%04.2f",temp);
+       
+       
+        wbytes = write(fd,print_buffer,0);
+        if (wbytes == -1){
+        
+         return -1;
+       }
+       
+       
+       close(fd);
+     
 
     	// print result
     	printf("Body Temperature of Person  = %04.2f\n", temp);
