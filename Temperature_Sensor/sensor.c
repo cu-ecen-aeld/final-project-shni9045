@@ -96,7 +96,7 @@ int main()
        sprintf(print_buffer,"%04.2f",temp);
        
        
-        wbytes = write(fd,print_buffer,0);
+        wbytes = write(fd,print_buffer,strlen(print_buffer);
         if (wbytes == -1){
         
          return -1;
