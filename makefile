@@ -15,14 +15,18 @@ ifeq ($(LDFLAGS),)
 	LDFLAGS = -pthread -lrt
 endif
 
-all: gpio
+all: gpio client
+default: all
 
 gpio: gpio.c
 	$(CC) $(CFLAGS) -o gpio gpio.c $(LDFLAGS)
+
+client: client_test.c
+	$(CC) $(CFLAGS) -o client client_test.c $(LDFLAGS)
 
 
 .PHONY: all
 
 clean:
-	\rm gpio
+	\rm gpio client
 	$(RM) $(TARGET) 

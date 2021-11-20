@@ -9,8 +9,8 @@ Window::Window()
     QVBoxLayout *layout = new QVBoxLayout;
     QHBoxLayout *buttons = new QHBoxLayout;
 
-    QPushButton *values_button = new QPushButton("Values");
-    QPushButton *chart_button = new QPushButton("Chart");
+    QPushButton *values_button = new QPushButton("OPEN/CLOSE DOOR");
+    QPushButton *chart_button = new QPushButton("AUTOMATIC MODE");
 
     buttons->addWidget(values_button);
     buttons->addWidget(chart_button);
@@ -20,7 +20,7 @@ Window::Window()
 
     setLayout(layout);
 
-    setWindowTitle(tr("Sensors"));
+    setWindowTitle(tr("AESD_FINAL_PROJECT"));
 }
 
 void Window::handleValueChanged(float temp)

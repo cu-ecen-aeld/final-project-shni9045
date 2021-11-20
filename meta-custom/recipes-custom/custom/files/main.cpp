@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 		     &window, &Window::handleValueChanged);
 
     window.setFixedSize(480, 800);
-    window.setStyleSheet("background-color: white;");
+    window.setStyleSheet("background-color: gray;");
     window.show();
     return app.exec();
 }
