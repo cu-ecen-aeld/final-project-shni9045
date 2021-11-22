@@ -14,7 +14,7 @@ Window::Window()
     QPushButton *door_button = new QPushButton("OPEN/CLOSE DOOR");
     QPushButton *mode_button = new QPushButton("AUTOMATIC MODE");
 
-    const QSize BUTTON_SIZE = QSize(100,100);
+    //const QSize BUTTON_SIZE = QSize(100,100);
     
     // Customizing button appearance
     door_button->setStyleSheet("font:bold;background-color:green;font-size: 50px;height: 48px;width: 120px;");
@@ -46,6 +46,8 @@ void Window::handle_doorbutton()
 
     static const char s_values_str[] = "01";
 
+    int LOW = 0;
+
     int value = 1;
 
 	char path[30];
@@ -63,7 +65,7 @@ void Window::handle_doorbutton()
 
 	}
 
-	close(fd);
+	::close(fd);
 
 }
 
