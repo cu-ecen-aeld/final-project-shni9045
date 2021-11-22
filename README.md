@@ -1,5 +1,5 @@
 ##  Temperature-Check & Secure Attendance System  
-This repository consists of implementation of yocto buildroot system repository for the final project.
+This repository contains implementation of the yocto build system and other source code for achieving required funtionality on Client Raspberry Pi for the final project.
 
 
 ## Repository Overview
