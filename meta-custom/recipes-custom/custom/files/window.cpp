@@ -43,6 +43,28 @@ void Window::handleValueChanged(float temp)
 void Window::handle_doorbutton()
 {
     QMessageBox::about(this,"Message","Relay Is Actuated");
+
+    static const char s_values_str[] = "01";
+
+    int value = 1;
+
+	char path[30];
+	int fd;
+
+	snprintf(path, 30, "/sys/class/gpio/gpio%d/value", 21);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open gpio value for writing!\n");
+
+	}
+
+	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1)) {
+		fprintf(stderr, "Failed to write value!\n");
+
+	}
+
+	close(fd);
+
 }
 
 void Window::handle_modebutton()
