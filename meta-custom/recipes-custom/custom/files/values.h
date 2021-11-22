@@ -5,6 +5,12 @@
 
 class QLabel;
 
+
+/*
+* Values Class to handle updated temperature value & other labels
+*
+*/
+
 class Values : public QWidget
 {
     Q_OBJECT

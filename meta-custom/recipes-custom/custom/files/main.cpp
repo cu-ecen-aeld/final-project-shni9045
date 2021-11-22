@@ -2,6 +2,12 @@
 #include "window.h"
 #include "data-provider.h"
 
+/*
+* Source file containing implementaion calls for GUI 
+*
+*/
+
+
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);

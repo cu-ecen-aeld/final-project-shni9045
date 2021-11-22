@@ -5,6 +5,11 @@
 
 class Values;
 
+/*
+* Window classe definition for handling main GUI window
+*
+*/
+
 class Window : public QWidget
 {
     Q_OBJECT

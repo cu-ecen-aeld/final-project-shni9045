@@ -3,6 +3,10 @@
 
 #include <QtCore/QTimer>
 
+/*
+* Data Provider class to read temperature sensor data at the rate of 1 Hz
+*
+*/
 class DataProvider: public QObject
 {
     Q_OBJECT
