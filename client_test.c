@@ -1,4 +1,10 @@
-//Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
+/*
+* Client code for implementing simple string transmission to server
+* Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
+*
+*/
+
+
 
 #include <netdb.h>
 #include <stdio.h>

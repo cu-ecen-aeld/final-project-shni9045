@@ -1,7 +1,8 @@
 /* 
+* Source file containing implementation of user space I2C driver for MLX90614 body temperature sensor
 * Attributes : https://olegkutkov.me/2017/08/10/mlx90614-raspberry/
 *
-*
+* Modified - shni9045@colorado.edu
 */
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -82,31 +83,33 @@ int main()
         return -1;
     	}
 	
-	// calculate temperature in Celsius by formula from datasheet
+	// Temperature COnversion as per datasheet
 	double temp = (double) data.word;
     	temp = (temp * 0.02)-0.01;
     	temp = temp - 273.15;
     	
+    	// Open file to write the converted temperature
     	fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
         if(fd<0){
 
          return -1;
        }
        
+       // Create string buffer of temperature value
        sprintf(print_buffer,"%04.2f",temp);
        
-       
+       // Write buffer to file
         wbytes = write(fd,print_buffer,strlen(print_buffer));
         if (wbytes == -1){
         
          return -1;
        }
        
-       
+       // Close file descriptor
        close(fd);
      
 
-    	// print result
+    	// Display result for debug purposes only
     	printf("Body Temperature of Person  = %04.2f\n", temp);
 
     	usleep(SLEEP_DURATION);
