@@ -16,6 +16,8 @@ class Window : public QWidget
 
 public slots:
     void handleValueChanged(float temp);
+    void handle_doorbutton();
+    void handle_modebutton();
 
 public:
     Window();
