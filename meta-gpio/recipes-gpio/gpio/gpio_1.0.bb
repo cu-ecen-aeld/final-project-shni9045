@@ -12,6 +12,7 @@ SRCREV = "${AUTOREV}"
 
 
 S = "${WORKDIR}/git"
+B = "${S}/GPIO"
 
 #inherit autotools
 

@@ -13,8 +13,10 @@
 #include <sys/socket.h>
 
 #include <unistd.h> 
-//#include <string.h> 
-//#include <fcntl.h>
+#include <string.h> 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <netinet/in.h> 
 
@@ -23,29 +25,48 @@
 #define MAX 80
 #define PORT 9000
 #define SA struct sockaddr
-void func(int sockfd)
+
+
+void  receive_sensordata(int sockfd)
 {
+
+        int fd,wbytes;
+	
 	char buff[MAX];
-	int n;
+
 	for (;;) {
+	
 		bzero(buff, sizeof(buff));
-		printf("Enter the string : ");
-		n = 0;
-		while ((buff[n++] = getchar()) != '\n')
-			;
-		write(sockfd, buff, sizeof(buff));
-		bzero(buff, sizeof(buff));
-		read(sockfd, buff, sizeof(buff));
-		printf("From Server : %s", buff);
-		if ((strncmp(buff, "exit", 4)) == 0) {
-			printf("Client Exit...\n");
-			break;
-		}
+
+		read(sockfd, buff, sizeof(double));
+		
+		// Open file to write the converted temperature
+    	       fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
+               if(fd<0){
+
+                 printf("Error in opening file\n");
+                 
+               }
+       
+             // Write buffer to file
+             wbytes = write(fd,buff,sizeof(double));
+             if (wbytes == -1){
+                
+                printf("Error in writing to file\n");
+                 
+              }
+       
+            // Close file descriptor
+            close(fd);
+		
 	}
 }
 
 int main()
 {
+
+
+        
 	int sockfd;
 	struct sockaddr_in servaddr;
 
@@ -76,7 +97,7 @@ int main()
 		printf("connected to the server..\n");
 
 	// function for chat
-	func(sockfd);
+	receive_sensordata(sockfd);
 
 	// close the socket
 	close(sockfd);

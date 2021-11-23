@@ -12,10 +12,13 @@ SRCREV = "${AUTOREV}"
 
 
 S = "${WORKDIR}/git"
+B = "${S}/Socket_Client"
 
 #inherit autotools
 
 FILES_${PN} += "${bindir}/client"
+
+
 # TODO: customize these as necessary for any libraries you need for your application
 TARGET_LDFLAGS += "-pthread -lrt"
 
