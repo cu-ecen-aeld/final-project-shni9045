@@ -14,8 +14,9 @@
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
 #include <unistd.h>
+#include <errno.h>
 #include <mqueue.h>
-#include <mqueue.h>
+
 
 #define MQUEUE_NAME  "/temp_sense_mq"
 
@@ -87,12 +88,13 @@ int main()
     mymq = mq_open(MQUEUE_NAME, O_CREAT|O_RDWR, S_IRWXU, &mq_attr);
     
     if (mymq < 0 ) {
-    
+       
+       perror("MQ OPEN");
        printf("Error in opening Message Queue\n");
     
     }
     
-    else printf("Message Queue created successfully\n");
+    else printf("Message Queue opened successfully\n");
     
 
     while(1)
@@ -113,7 +115,7 @@ int main()
        
        if ((nbytes = mq_send( mymq, send_buffer, sizeof(double), 1)) == -1 )
        {
-           
+             perror("MQ SEND");
              printf("Error in  Sending data over  Message Queue\n");  
        
        }

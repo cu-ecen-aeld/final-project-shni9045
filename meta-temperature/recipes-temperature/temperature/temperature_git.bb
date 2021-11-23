@@ -23,6 +23,7 @@ B = "${S}/Temperature_Sensor"
 FILES_${PN} += "${bindir}/tempsensor"
 
 # TODO: customize these as necessary for any libraries you need for your application
+TARGET_LDFLAGS += "-pthread -lrt"
 
 do_configure () {
 	:
