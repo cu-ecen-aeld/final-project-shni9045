@@ -1,0 +1,8 @@
+[Unit]
+Description= A start script from sensor.c program
+
+[Service]
+ExecStart=/usr/bin/tempsensor
+
+[Install]
+WantedBy=multi-user.target
