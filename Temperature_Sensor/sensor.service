@@ -1,8 +1,24 @@
-[Unit]
-Description= A start script from sensor.c program
 
-[Service]
-ExecStart=/usr/bin/tempsensor
+case "$1" in
+  start)
+    echo -n "Starting test application: "
+    start-stop-daemon --start --exec  /usr/bin/tempsensor
+    echo "done"
+    ;;  
+  stop)
+    echo -n "Stopping test application"
+    start-stop-daemon --stop --exec /usr/bin/tempsensor
+    echo "done"
+    ;;  
+  restart)
+    $0 stop
+    $0 start
+    ;;  
+  *)  
+    echo "Usage: test_service { start | stop | restart }" >&2
+    exit 1
+    ;;
+esac
 
-[Install]
-WantedBy=multi-user.target
+exit 0
+
