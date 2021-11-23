@@ -14,7 +14,12 @@
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
 #include <unistd.h>
+#include <mqueue.h>
+#include <mqueue.h>
 
+#define MQUEUE_NAME  "/temp_sense_mq"
+
+struct mq_attr mq_attr;
 
 #define MLX90614_TA 			(0x06)
 #define MLX90614_TOBJ1 			(0x07)
@@ -39,8 +44,7 @@ typedef union i2c_smbus_data i2c_data;
 int main()
 {
 
-    int fd,wbytes;
-   
+    int nbytes;
      
     int fdev = open(I2C_DEV_PATH, O_RDWR); // open i2c bus
 
@@ -73,7 +77,23 @@ int main()
         .data = &data
     };
     
-    char print_buffer[20];
+    char send_buffer[sizeof(double)];
+    
+    mq_attr.mq_maxmsg = 10;
+    mq_attr.mq_msgsize = sizeof(double);
+    
+    mqd_t mymq;
+    
+    mymq = mq_open(MQUEUE_NAME, O_CREAT|O_RDWR, S_IRWXU, &mq_attr);
+    
+    if (mymq < 0 ) {
+    
+       printf("Error in opening Message Queue\n");
+    
+    }
+    
+    else printf("Message Queue created successfully\n");
+    
 
     while(1)
     {
@@ -88,27 +108,19 @@ int main()
     	temp = (temp * 0.02)-0.01;
     	temp = temp - 273.15;
     	
-    	// Open file to write the converted temperature
-    	fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
-        if(fd<0){
-
-         return -1;
+        // Create string buffer of temperature value
+       sprintf(send_buffer,"%04.2f",temp);
+       
+       if ((nbytes = mq_send( mymq, send_buffer, sizeof(double), 1)) == -1 )
+       {
+           
+             printf("Error in  Sending data over  Message Queue\n");  
+       
        }
        
-       // Create string buffer of temperature value
-       sprintf(print_buffer,"%04.2f",temp);
+       else printf("Message data sent over Message Queue successfully\n");
+    	
        
-       // Write buffer to file
-        wbytes = write(fd,print_buffer,strlen(print_buffer));
-        if (wbytes == -1){
-        
-         return -1;
-       }
-       
-       // Close file descriptor
-       close(fd);
-     
-
     	// Display result for debug purposes only
     	printf("Body Temperature of Person  = %04.2f\n", temp);
 
