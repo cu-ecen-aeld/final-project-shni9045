@@ -12,8 +12,8 @@ ifeq ($(LDFLAGS),)
 	LDFLAGS= -lrt
 endif
 
-all: server tempsensor
-default: server tempsensor
+all: server
+default: server
 
 server : server.o
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o server server.o $(LDFLAGS)
@@ -21,11 +21,5 @@ server : server.o
 server.o : server.c
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c server.c $(LDFLAGS)
 
-tempsensor : sensor.o
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o tempsensor sensor.o $(LDFLAGS)
-
-sensor.o : sensor.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c sensor.c $(LDFLAGS)
-
 clean :
-	rm -f *.o server tempsensor
+	rm -f *.o server

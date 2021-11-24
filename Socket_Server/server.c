@@ -63,7 +63,7 @@ int main()
 { 
 	int sockfd, connfd, len; 
 	struct sockaddr_in servaddr, cli;
-	mq_attr.mq_maxmsg = 10;
+	mq_attr.mq_maxmsg = 100;
 	mq_attr.mq_msgsize = sizeof(double);
     
         mqd_t mymq;

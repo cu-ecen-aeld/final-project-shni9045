@@ -80,7 +80,7 @@ int main()
     
     char send_buffer[sizeof(double)];
     
-    mq_attr.mq_maxmsg = 10;
+    mq_attr.mq_maxmsg = 100;
     mq_attr.mq_msgsize = sizeof(double);
     
     mqd_t mymq;
