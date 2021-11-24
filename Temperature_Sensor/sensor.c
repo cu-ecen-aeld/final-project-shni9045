@@ -117,6 +117,7 @@ int main()
        {
              perror("MQ SEND");
              printf("Error in  Sending data over  Message Queue\n");  
+             return -1;
        
        }
        

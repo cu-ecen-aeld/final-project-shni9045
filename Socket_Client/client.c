@@ -1,45 +1,67 @@
-/*
-* Client code for implementing simple string transmission to server
-* Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
-*
-*/
+/* References:
+ * 1. library has to be installed: https://stackoverflow.com/questions/61186574/libgpiod-api-usage-linux-shared-libraries
+ * 2. client code reference: https://www.geeksforgeeks.org/socket-programming-cc/
+ */
 
-
-
-#include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
+#include <stdint.h>
 #include <string.h>
-#include <sys/socket.h>
+#include <stdbool.h>
 
-#include <unistd.h> 
-#include <string.h> 
+//client socket related extra additions
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <netinet/in.h> 
 
-#include <arpa/inet.h>
+#define PORT_NO				(9000)
+#define MSEC_TO_SEC			(1000)
+#define USEC_TO_MSEC			(1000)
 
-#define MAX 80
-#define PORT 9000
-#define SA struct sockaddr
+#define SLEEP_TIME			(5*(USEC_TO_MSEC)*(MSEC_TO_SEC))
 
 
-void  receive_sensordata(int sockfd)
-{
 
+
+//client related initialization
+bool client_init(const char IP[]);
+
+//client global variables
+int client_socket_fd;
+
+int main(int argc, char *argv[])
+{      
         int fd,wbytes;
-	
-	char buff[MAX];
 
-	for (;;) {
-	
-		bzero(buff, sizeof(buff));
+	bool client_init_status = false;
+	char buffer[1024] = {0};
+	char IP[20] = {0};
 
-		read(sockfd, buff, sizeof(double));
-		
+	if(argc != 2)
+	{
+		printf("Usage client_test [IP]\n");
+		return -1;
+	}
+
+	memcpy(IP, argv[1], strlen(argv[1]));
+	printf("Connecting to Server's IP %s\n", IP);
+
+
+	client_init_status = client_init(IP);
+	if(client_init_status == false)
+	{
+		perror("client_init");  
+		return -1;
+	}
+
+	
+	while(1)
+	{
+		read(client_socket_fd,buffer,sizeof(double));
+
 		// Open file to write the converted temperature
     	       fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
                if(fd<0){
@@ -49,7 +71,7 @@ void  receive_sensordata(int sockfd)
                }
        
              // Write buffer to file
-             wbytes = write(fd,buff,sizeof(double));
+             wbytes = write(fd,buffer,sizeof(double));
              if (wbytes == -1){
                 
                 printf("Error in writing to file\n");
@@ -58,47 +80,40 @@ void  receive_sensordata(int sockfd)
        
             // Close file descriptor
             close(fd);
-		
 	}
 }
 
-int main()
+bool client_init(const char IP[])
 {
-
-
-        
-	int sockfd;
-	struct sockaddr_in servaddr;
-
-	// socket create and varification
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1) {
-		printf("socket creation failed...\n");
-		exit(0);
+	client_socket_fd = socket(AF_INET,SOCK_STREAM,0);
+	if(client_socket_fd < 0)
+	{
+		perror("client_socket_fd");  
+		return false; 
 	}
-	else
-		printf("Socket successfully created..\n");
-	bzero(&servaddr, sizeof(servaddr));
-
-	// assign IP, PORT
-	char ip_addr[24]={0};
-	printf("Enter IP address of the server: ");
-	scanf("%s",ip_addr);
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = inet_addr(ip_addr);
-	servaddr.sin_port = htons(PORT);
-
-	// connect the client socket to server socket
-	if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) {
-		printf("connection with the server failed...\n");
-		exit(0);
+	
+	struct sockaddr_in server_address;
+	server_address.sin_family = AF_INET;
+	server_address.sin_port = htons(PORT_NO);
+	
+	int client_inet_pton_fd = inet_pton(AF_INET,IP,&server_address.sin_addr);
+	if(client_inet_pton_fd <= 0)
+	{
+		perror("client_inet_pton_fd");  
+		return false; 
 	}
-	else
-		printf("connected to the server..\n");
+	
+	int client_connect_fd = connect(client_socket_fd, (struct sockaddr *)&server_address,sizeof(server_address));
+	if(client_connect_fd < 0)
+	{
+		perror("client_connect_fd");  
+		return false; 
+	}
 
-	// function for chat
-	receive_sensordata(sockfd);
+	printf("client init completed\n");
 
-	// close the socket
-	close(sockfd);
+	return true;
 }
+
+
+
