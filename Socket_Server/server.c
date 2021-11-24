@@ -33,6 +33,8 @@ void communicate_sensordata(mqd_t mq,int sockfd){
 
          char send_buffer[sizeof(double)];
          
+         while (1) {
+         
          if ((nbytes = mq_receive( mq, send_buffer, sizeof(double), &prio)) == -1 )
           {
              perror("MQ RECEIVE");
@@ -54,6 +56,7 @@ void communicate_sensordata(mqd_t mq,int sockfd){
              }
                         
           }
+        }
         
 }
 
@@ -120,12 +123,10 @@ int main()
 	else
 		printf("server acccept the client...\n"); 
 
-	while (1){
 	   
-	   communicate_sensordata(mymq,sockfd);
+	communicate_sensordata(mymq,sockfd);
 	
-	}
-
+	
 	// After chatting close the socket 
 	close(sockfd); 
 } 
