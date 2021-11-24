@@ -1,25 +1,19 @@
-#!/bin/sh
+
+#! /bin/sh
 
 case "$1" in
-  start)
-    echo -n "Starting test application: "
-    start-stop-daemon --start --exec  /usr/bin/tempsensor
-    echo "done"
-    ;;  
-  stop)
-    echo -n "Stopping test application"
-    start-stop-daemon --stop --exec /usr/bin/tempsensor
-    echo "done"
-    ;;  
-  restart)
-    $0 stop
-    $0 start
-    ;;  
-  *)  
-    echo "Usage: test_service { start | stop | restart }" >&2
-    exit 1
-    ;;
+    start)
+       	echo "Starting aesdsocket"
+	start-stop-daemon -S -n tempsensor -a /usr/bin/tempsensor -- -d
+	;;
+    stop)
+	echo "Stopping aesdsocket"
+	start-stop-daemon -K -n tempsensor
+	;;
+    *)
+	echo "Usage: $0 {start|stop}"
+	exit 1
+
 esac
 
 exit 0
-
