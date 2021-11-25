@@ -22,6 +22,7 @@ class Window : public QWidget
 
 public slots:
     void handleValueChanged(float temp);
+    void handleIdChanged(int id);
     void handle_doorbutton();
     void handle_modebutton();
 

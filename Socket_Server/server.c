@@ -83,6 +83,7 @@ void TxRxData(void *thread_param)
 	        memcpy(&temperature, txbuf, sizeof(double));
 		memcpy(&id, txbuf + sizeof(double), sizeof(int));
 		
+		
 		sprintf(buffer, "TC%.2lf\nID%02d\n", temperature, id);
 		
 		/* Send data read from file to client */

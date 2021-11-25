@@ -17,6 +17,9 @@ int main(int argc, char* argv[])
     QObject::connect(&dp, &DataProvider::valueChanged,
 		     &window, &Window::handleValueChanged);
 
+    QObject::connect(&dp, &DataProvider::idchanged,
+		     &window, &Window::handleIdChanged);
+
     window.setFixedSize(480, 800);
     window.setStyleSheet("background-color: gray;");
     window.show();

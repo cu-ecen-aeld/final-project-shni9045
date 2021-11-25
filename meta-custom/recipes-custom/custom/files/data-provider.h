@@ -19,6 +19,7 @@ private slots:
 
 signals:
     void valueChanged(float temp);
+    void idchanged(int id);
 
 private:
     QTimer timer;

@@ -21,9 +21,11 @@ public:
 public slots:
 
     void handleValueChanged(float temp);
+    void handleIdChanged(int id);
 
 private:
     QLabel *temperature_v;
+    QLabel *user;
 
 };
 

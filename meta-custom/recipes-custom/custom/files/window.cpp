@@ -40,6 +40,12 @@ void Window::handleValueChanged(float temp)
     values->handleValueChanged(temp);
 }
 
+// Memeber function to handle fingerprint id
+void Window::handleIdChanged(int id)
+{
+    values->handleIdChanged(id);
+}
+
 void Window::handle_doorbutton()
 {
     QMessageBox::about(this,"Message","Relay Is Actuated");

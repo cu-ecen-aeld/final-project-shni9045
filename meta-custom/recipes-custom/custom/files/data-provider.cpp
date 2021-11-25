@@ -25,4 +25,17 @@ void DataProvider::handleTimer()
     qDebug() << "Temperature: " << temp;
 
     emit valueChanged(temp);
+
+    QFile temp_i("/var/tmp/iddata.txt");
+
+    if (!temp_i.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    int id  = QString(temp_i.readAll()).toDouble();
+
+    qDebug() << "ID : " << id;
+
+    emit idchanged(id);
+
+
 }

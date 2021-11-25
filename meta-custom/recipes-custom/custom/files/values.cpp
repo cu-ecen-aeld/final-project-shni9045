@@ -52,7 +52,7 @@ Values::Values()
     fingerprint->setAlignment(Qt::AlignHCenter);
 
 
-    QLabel *user = new QLabel(tr("**user_name**"));
+    user = new QLabel();
 
     QFont v = user->font();
     v.setPointSize(40);
@@ -76,4 +76,22 @@ Values::Values()
 void Values::handleValueChanged(float temp)
 {
     temperature_v->setText(QString::number(temp, 'f', 2));
+}
+
+// Member function to update displayed temperature value
+void Values::handleIdChanged(int id)
+{
+
+    switch(id) {
+
+       case 0:
+         {
+             user->setText("Chirayu");
+             break;
+         } 
+
+       default :  user->setText("Unknown User");
+
+    }
+
 }
