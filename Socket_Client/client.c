@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <string.h>
@@ -35,8 +36,11 @@ int client_socket_fd;
 int main(int argc, char *argv[])
 {   
 
-        char id[sizeof(int)];
-        char temperature[sizeof(double)];     
+        int id;
+        float temperature;     
+        
+        char temp_str[20];
+        char id_str[20];
         
         int fd,td,wbytes;
 
@@ -64,43 +68,59 @@ int main(int argc, char *argv[])
 	
 	while(1)
 	{
-		read(client_socket_fd,buffer,sizeof(double)+sizeof(int));
+		read(client_socket_fd,buffer,sizeof(buffer));
 		
-		memcpy(temperature, buffer, sizeof(double));
-		memcpy(id, buffer + sizeof(double), sizeof(int));
+		printf("---FROM SERVER----%s",buffer);
+		
+		if(strncmp(buffer,"TC",2) == 0){
+		
+		
+		
+		  strncpy(temp_str,buffer+2,5);
+		  
+		  temperature = atof(temp_str);
+		
+		
+		   // Open file to write the converted temperature
+    	          fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
+                  if(fd<0){
 
-		// Open file to write the converted temperature
-    	       fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
-               if(fd<0){
-
-                 printf("Error in opening file\n");
+                    printf("Error in opening file\n");
                  
-               }
+                  }
        
-             // Write buffer to file
-             wbytes = write(fd,temperature,sizeof(double));
-             if (wbytes == -1){
+                  // Write buffer to file
+                  wbytes = write(fd,&temperature,sizeof(double));
+                  if (wbytes == -1){
                 
-                printf("Error in writing to file\n");
+                   printf("Error in writing to file\n");
                  
-              }
+                  }
        
-            // Close file descriptor
-            close(fd);
-            
-            // Open file to write the converted temperature
+                  // Close file descriptor
+                  close(fd);
+		
+		
+		}
+		
+		
+		else if (strncmp(buffer+7,"ID",2) == 0){
+		
+		
+		  strncpy(id_str,buffer+2,3);
+		  
+		  id = atoi(id_str);
+		
+		// Open file to write the converted temperature
     	     td =  open("/var/tmp/iddata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
-             if(fd<0){
+             if(td<0){
 
                  printf("Error in opening file\n");
                  
                }
-               
-            printf("ID[0] == %d\n",id[0]);
-            printf("ID[1] == %d\n",id[1]);
        
              // Write buffer to file
-             wbytes = write(td,id,sizeof(int));
+             wbytes = write(td,&id,sizeof(int));
              if (wbytes == -1){
                 
                 printf("Error in writing to file\n");
@@ -109,8 +129,9 @@ int main(int argc, char *argv[])
        
             // Close file descriptor
             close(td);
-            
-            
+			
+		}
+		       
             
 	}
 }

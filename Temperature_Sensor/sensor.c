@@ -236,7 +236,7 @@ int identify_fingerprint()
         } 
 		buff[0] = (char) cResponse[3];
 		while(led_off_fingerprint() == -1);
-		return  (cResponse[3] - '0');
+		return  (cResponse[3]);
 	}
 
 
@@ -394,7 +394,10 @@ int main()
             printf("******ID****** === %d\n",id);
 
             // Create string buffer of temperature value
-            sprintf(send_buffer,"%04.2f%d",temp,id);
+            //sprintf(send_buffer,"%04.2f%d",temp,id);
+
+            memcpy(send_buffer, &temp, sizeof(double));
+            memcpy(send_buffer + sizeof(double), &id, sizeof(int));
 
         if ((nbytes = mq_send( mymq, send_buffer, sizeof(double)+sizeof(int), 1)) == -1 )
          {

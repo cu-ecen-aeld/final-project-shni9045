@@ -67,16 +67,26 @@ void TxRxData(void *thread_param)
 {
 	struct fnparam *l_fnp = (struct fnparam*) thread_param;
 
-	char txbuf[20];
+	char txbuf[sizeof(double)+sizeof(int)];
+	
+	char buffer[100];
+	
+	double temperature;
+	int id;
 
 	while(1)
 	{
 		mq_receive_len = mq_receive(mq_receive_desc, txbuf, sizeof(double)+sizeof(int), &rx_prio);
 		if(mq_receive_len < 0)
 			perror("Did not receive any data");
+			
+	        memcpy(&temperature, txbuf, sizeof(double));
+		memcpy(&id, buffer + sizeof(double), sizeof(int));
+		
+		sprintf(buffer, "TC%04.2fID%03d", temperature, id);
 		
 		/* Send data read from file to client */
-		int sent_bytes = send(l_fnp->f_client_fd, txbuf, sizeof(double)+sizeof(int), 0);
+		int sent_bytes = send(l_fnp->f_client_fd, buffer, strlen(buffer)+1, 0);
 		
 		/* Error in sending */
 		if(sent_bytes == -1)
