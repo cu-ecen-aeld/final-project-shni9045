@@ -71,12 +71,12 @@ void TxRxData(void *thread_param)
 
 	while(1)
 	{
-		mq_receive_len = mq_receive(mq_receive_desc, txbuf, sizeof(double), &rx_prio);
+		mq_receive_len = mq_receive(mq_receive_desc, txbuf, sizeof(double)+sizeof(int), &rx_prio);
 		if(mq_receive_len < 0)
 			perror("Did not receive any data");
 		
 		/* Send data read from file to client */
-		int sent_bytes = send(l_fnp->f_client_fd, txbuf, sizeof(double), 0);
+		int sent_bytes = send(l_fnp->f_client_fd, txbuf, sizeof(double)+sizeof(int), 0);
 		
 		/* Error in sending */
 		if(sent_bytes == -1)

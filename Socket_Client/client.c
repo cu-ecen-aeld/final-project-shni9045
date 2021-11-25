@@ -33,8 +33,12 @@ bool client_init(const char IP[]);
 int client_socket_fd;
 
 int main(int argc, char *argv[])
-{      
-        int fd,wbytes;
+{   
+
+        char id[sizeof(int)];
+        char temperature[sizeof(double)];     
+        
+        int fd,td,wbytes;
 
 	bool client_init_status = false;
 	char buffer[1024] = {0};
@@ -60,7 +64,10 @@ int main(int argc, char *argv[])
 	
 	while(1)
 	{
-		read(client_socket_fd,buffer,sizeof(double));
+		read(client_socket_fd,buffer,sizeof(double)+sizeof(int));
+		
+		memcpy(temperature, buffer, sizeof(double));
+		memcpy(id, buffer + sizeof(double), sizeof(int));
 
 		// Open file to write the converted temperature
     	       fd =  open("/var/tmp/tempdata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
@@ -71,7 +78,7 @@ int main(int argc, char *argv[])
                }
        
              // Write buffer to file
-             wbytes = write(fd,buffer,sizeof(double));
+             wbytes = write(fd,temperature,sizeof(double));
              if (wbytes == -1){
                 
                 printf("Error in writing to file\n");
@@ -80,6 +87,31 @@ int main(int argc, char *argv[])
        
             // Close file descriptor
             close(fd);
+            
+            // Open file to write the converted temperature
+    	     td =  open("/var/tmp/iddata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
+             if(fd<0){
+
+                 printf("Error in opening file\n");
+                 
+               }
+               
+            printf("ID[0] == %d\n",id[0]);
+            printf("ID[1] == %d\n",id[1]);
+       
+             // Write buffer to file
+             wbytes = write(td,id,sizeof(int));
+             if (wbytes == -1){
+                
+                printf("Error in writing to file\n");
+                 
+              }
+       
+            // Close file descriptor
+            close(td);
+            
+            
+            
 	}
 }
 
