@@ -236,7 +236,7 @@ int identify_fingerprint()
         } 
 		buff[0] = (char) cResponse[3];
 		while(led_off_fingerprint() == -1);
-		return cResponse[3];
+		return  (cResponse[3] - '0');
 	}
 
 
@@ -390,6 +390,8 @@ int main()
         {
             printf("Finger is pressed\n");
             int id = identify_fingerprint();
+
+            printf("******ID****** === %d\n",id);
 
             // Create string buffer of temperature value
             sprintf(send_buffer,"%04.2f%d",temp,id);
