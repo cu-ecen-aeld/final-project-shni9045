@@ -81,9 +81,9 @@ void TxRxData(void *thread_param)
 			perror("Did not receive any data");
 			
 	        memcpy(&temperature, txbuf, sizeof(double));
-		memcpy(&id, buffer + sizeof(double), sizeof(int));
+		memcpy(&id, txbuf + sizeof(double), sizeof(int));
 		
-		sprintf(buffer, "TC%04.2fID%03d", temperature, id);
+		sprintf(buffer, "TC%.2lf\nID%02d\n", temperature, id);
 		
 		/* Send data read from file to client */
 		int sent_bytes = send(l_fnp->f_client_fd, buffer, strlen(buffer)+1, 0);

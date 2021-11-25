@@ -39,9 +39,12 @@ int main(int argc, char *argv[])
         int id;
         float temperature;     
         
-        char temp_str[20];
-        char id_str[20];
+        char hold_str[200] = {0};
         
+        char temp_str[20];
+        
+        char conv_str[20];	
+   
         int fd,td,wbytes;
 
 	bool client_init_status = false;
@@ -70,15 +73,31 @@ int main(int argc, char *argv[])
 	{
 		read(client_socket_fd,buffer,sizeof(buffer));
 		
-		printf("---FROM SERVER----%s",buffer);
 		
-		if(strncmp(buffer,"TC",2) == 0){
-		
+		printf("---FROM SERVER----%s\n",buffer);
 		
 		
-		  strncpy(temp_str,buffer+2,5);
+		strncpy(hold_str,buffer,strlen(buffer));
+		
+		
+		if(0 == (strncmp(hold_str,"TC",2))){
+		
+		  char buf[10] = {0};
+		
+		
+		  strncpy(temp_str,hold_str,7);
 		  
-		  temperature = atof(temp_str);
+		  strncpy(conv_str,temp_str+2,5);
+		  
+		  temperature = atof(conv_str);
+		  
+		   strncpy(temp_str,"",strlen(temp_str));
+		  
+		  
+		  printf("----Converted Temperature : %.2lf",temperature);
+		  
+		  sprintf(buf,"%04.2f",temperature);
+		  
 		
 		
 		   // Open file to write the converted temperature
@@ -90,7 +109,7 @@ int main(int argc, char *argv[])
                   }
        
                   // Write buffer to file
-                  wbytes = write(fd,&temperature,sizeof(double));
+                  wbytes = write(fd,buf,strlen(buf));
                   if (wbytes == -1){
                 
                    printf("Error in writing to file\n");
@@ -104,12 +123,23 @@ int main(int argc, char *argv[])
 		}
 		
 		
-		else if (strncmp(buffer+7,"ID",2) == 0){
+		if (0 == (strncmp(hold_str+8,"ID",2))){
 		
-		
-		  strncpy(id_str,buffer+2,3);
+		  char buf[10] = {0};
 		  
-		  id = atoi(id_str);
+		  strncpy(temp_str,hold_str+8,4);
+		  
+		  strncpy(conv_str,temp_str+2,2);
+
+		  
+		  id = atoi(conv_str);
+		  
+		 strncpy(temp_str,"",strlen(temp_str));
+		 
+		 
+		  printf("----Converted ID: %d",id);
+		  
+		  sprintf(buf,"%d",id);
 		
 		// Open file to write the converted temperature
     	     td =  open("/var/tmp/iddata.txt",O_RDWR|O_CREAT|O_TRUNC,S_IRWXU);
@@ -120,7 +150,7 @@ int main(int argc, char *argv[])
                }
        
              // Write buffer to file
-             wbytes = write(td,&id,sizeof(int));
+             wbytes = write(td,buf,strlen(buf));
              if (wbytes == -1){
                 
                 printf("Error in writing to file\n");
