@@ -390,7 +390,9 @@ int main()
     	
     	// Display result for debug purposes only
     	printf("Body Temperature of Person  = %04.2f\n", temp);
-
+    	
+    	led_on_fingerprint();
+        printf("Press finger\n");
 
         /*****Finger Print Sensor******/
 

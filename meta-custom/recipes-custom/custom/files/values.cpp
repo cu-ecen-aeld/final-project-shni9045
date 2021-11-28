@@ -97,7 +97,7 @@ void Values::handleIdChanged(int id)
 
              time_t t = time(NULL);
 
-             stuct tm tm = *localtime(&t);
+             struct tm tm = *localtime(&t);
 
              sprintf(name,"USER NAME : Chirayu LOGIN TIME : %d-%02d-%02d %02d:%02d:%02d\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
@@ -134,7 +134,7 @@ void Values::handleIdChanged(int id)
 
             time_t t = time(NULL);
 
-             stuct tm tm = *localtime(&t);
+             struct tm tm = *localtime(&t);
 
              sprintf(name,"USER NAME : Shrikant LOGIN TIME : %d-%02d-%02d %02d:%02d:%02d\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
