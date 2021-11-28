@@ -86,11 +86,80 @@ void Values::handleIdChanged(int id)
 
        case 0:
          {
+             int fd;
+
+             int wbytes;
+
+             //char name[] = "USER NAME : Chirayu\n";
+             char name[200];
+
              user->setText("Chirayu");
+
+             time_t t = time(NULL);
+
+             stuct tm tm = *localtime(&t);
+
+             sprintf(name,"USER NAME : Chirayu LOGIN TIME : %d-%02d-%02d %02d:%02d:%02d\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+             fd = open("/var/tmp/idlog.txt",O_RDWR|O_CREAT|O_APPEND,S_IRWXU);
+             if(fd<0){
+
+                printf("Error in opening file\n");
+                
+            }
+       
+            // Write buffer to file
+            wbytes = write(fd,name,strlen(name));
+            if (wbytes == -1){
+        
+            printf("Error in writing to file\n");
+            
+            }
+
+            // Close file descriptor
+            ::close(fd);
+             
              break;
          } 
 
-       default :  user->setText("Unknown User");
+         case 1:{
+
+
+             int fd,wbytes;
+
+             //char name[] = "USER NAME : Shri\n";
+            char name[200];
+
+            user->setText("Shrikant");
+
+            time_t t = time(NULL);
+
+             stuct tm tm = *localtime(&t);
+
+             sprintf(name,"USER NAME : Shrikant LOGIN TIME : %d-%02d-%02d %02d:%02d:%02d\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+             fd = open("/var/tmp/idlog.txt",O_RDWR|O_CREAT|O_APPEND,S_IRWXU);
+             if(fd<0){
+
+                printf("Error in opening file\n");
+                
+            }
+       
+            // Write buffer to file
+            wbytes = write(fd,name,strlen(name));
+            if (wbytes == -1){
+        
+            printf("Error in writing to file\n");
+            
+            }
+
+            // Close file descriptor
+            ::close(fd);
+             
+             break;
+         }
+
+       default : user->setText("Unknown User");
 
     }
 

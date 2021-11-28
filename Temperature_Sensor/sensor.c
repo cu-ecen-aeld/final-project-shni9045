@@ -257,12 +257,23 @@ int is_Finger_pressed()
 {
 	for (int i=0; i<MAX_FRAME_SIZE; i++) 
     		cResponse[i] = 0;
-	bytes_write=write(hDevice,ISPRESSFINGER2,sizeof(ISPRESSFINGER2));
+
+        int pval;
+	bytes_write=write(hDevice,ISPRESSFINGER,sizeof(ISPRESSFINGER));
 	bytes_read=read(hDevice, cResponse, MAX_FRAME_SIZE);
-	if(cResponse[8] == 0x30 && cResponse[7] == 0x00 && cResponse[6] == 0x00 && cResponse[5] == 0x00 && cResponse[4] == 0x00)
-	{	
-		return 1;
-	}
+	//if(cResponse[8] == 0x30 && cResponse[7] == 0x00 && cResponse[6] == 0x00 && cResponse[5] == 0x00 && cResponse[4] == 0x00)
+	//{	
+		//return 1;
+	//}
+        if(cResponse[8] == 0x30)
+        {
+           pval=cResponse[4];
+           pval+=cResponse[5];
+           pval+=cResponse[6];
+           pval+=cResponse[7];
+        }
+        if(pval==0) 
+           return 1;
 	return 0;
 }
 
@@ -382,9 +393,6 @@ int main()
 
 
         /*****Finger Print Sensor******/
-
-        led_on_fingerprint();
-        //printf("Press finger\n");
 
         if(is_Finger_pressed())
         {

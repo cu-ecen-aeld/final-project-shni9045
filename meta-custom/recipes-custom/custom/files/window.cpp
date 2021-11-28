@@ -12,7 +12,7 @@ Window::Window()
     
     // Buttons for door & mode control
     QPushButton *door_button = new QPushButton("OPEN/CLOSE DOOR");
-    QPushButton *mode_button = new QPushButton("AUTOMATIC MODE");
+    QPushButton *mode_button = new QPushButton("ENTRY LOG");
 
     //const QSize BUTTON_SIZE = QSize(100,100);
     
@@ -54,28 +54,64 @@ void Window::handle_doorbutton()
 
     int LOW = 0;
 
-    int value = 1;
-
-	char path[30];
-	int fd;
-
-	snprintf(path, 30, "/sys/class/gpio/gpio%d/value", 21);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd) {
+	char path1[30],path2[30];
+	int fd1,fd2;
+    
+    // GPIO Pin 21
+	snprintf(path1, 30, "/sys/class/gpio/gpio%d/value", 21);
+	fd1 = open(path1, O_WRONLY);
+	if (-1 == fd1) {
 		fprintf(stderr, "Failed to open gpio value for writing!\n");
 
 	}
 
-	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1)) {
+	if (1 != write(fd1, &s_values_str[LOW == 1 ? 0 : 1], 1)) {
 		fprintf(stderr, "Failed to write value!\n");
 
 	}
 
-	::close(fd);
+    // GPIO Pin 20
+    snprintf(path2, 30, "/sys/class/gpio/gpio%d/value", 20);
+	fd2 = open(path2, O_WRONLY);
+	if (-1 == fd2) {
+		fprintf(stderr, "Failed to open gpio value for writing!\n");
+
+	}
+
+	if (1 != write(fd2, &s_values_str[LOW == 1 ? 0 : 1], 1)) {
+		fprintf(stderr, "Failed to write value!\n");
+
+	}
+
+    sleep(1);
+    
+    // GPIO Pin 21
+    if (1 != write(fd1, &s_values_str[LOW == 0 ? 0 : 1], 1)) {
+    fprintf(stderr, "Failed to write value!\n");
+
+	}
+    
+    // GPIO Pin 20
+    if (1 != write(fd2, &s_values_str[LOW == 0 ? 0 : 1], 1)) {
+    fprintf(stderr, "Failed to write value!\n");
+    
+    }
+
+	::close(fd1);
+
+    ::close(fd2);
 
 }
 
 void Window::handle_modebutton()
 {
-    QMessageBox::about(this,"Message","Mode Is Changed");
+    QMessageBox *msgbox = new QMessageBox;
+    QFile *file = new QFile ("/var/tmp/idlog.txt");
+    if (file->open (QIODevice::ReadOnly) == true)
+    {
+    msgbox->setText (QString (file->readAll ()));
+    file->close ();
+    }
+    msgbox->exec ();
+
 }
