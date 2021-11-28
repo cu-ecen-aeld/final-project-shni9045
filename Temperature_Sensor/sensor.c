@@ -230,25 +230,29 @@ int identify_fingerprint()
 
 	if(cResponse[7] == 0x30)
 	{
-		if(cResponse[3] == 1)
+	 
+	 if(cResponse[3] == 1)
         {
             printf("Fingerprint ID: Chirayu\n");
+            buff[0] = (char) cResponse[3];
+	    while(led_off_fingerprint() == -1);
+	    return 0;
         } 
-		buff[0] = (char) cResponse[3];
-		while(led_off_fingerprint() == -1);
-		return  (cResponse[3]);
+        
+        if(cResponse[3] == 2)
+        {
+            printf("Fingerprint ID: Shrikant\n");
+            buff[0] = (char) cResponse[3];
+	    while(led_off_fingerprint() == -1);
+	    return 1;
+
+		
+	}
+	
 	}
 
 
-    else {
-
-
-        return 200;
-
-
-
-    }
-	
+	buff[0] = (char)0;
 	while(led_off_fingerprint() == -1);
 	return 200;
 }
