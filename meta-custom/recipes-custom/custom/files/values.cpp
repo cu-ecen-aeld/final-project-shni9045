@@ -9,7 +9,7 @@ Values::Values()
     QLabel *app_name = new QLabel(tr("AESD SECURE ATTENDANCE"));
 
     QFont s = app_name->font();
-    s.setPointSize(88);
+    s.setPointSize(82);
     s.setBold(true);
     s.setItalic(true);
     app_name->setFont(s);

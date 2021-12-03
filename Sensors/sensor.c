@@ -1,12 +1,14 @@
 /* 
-* Source file containing implementation of Client Sensor Communication
-* Attributes : https://olegkutkov.me/2017/08/10/mlx90614-raspberry/
-*              https://classes.colorado.edu/?keyword=ECEN%205623&srcdb=2214 (message queues)
+* Source file containing implementation of Server Sensors & Message Queue
 *
 * Modified - shni9045@colorado.edu
 * Message Queue Communication : shrikant nimhan
 * Temperature Sensor : shrikant nimhan
-* Fingerpritn Sensor : chirayu thakur 
+* Fingerprint Sensor : chirayu thakur 
+*
+* Attributes : https://olegkutkov.me/2017/08/10/mlx90614-raspberry/
+*              https://classes.colorado.edu/?keyword=ECEN%205623&srcdb=2214 (message queues)
+*
 * 
 */
 #include <sys/ioctl.h>

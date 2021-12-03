@@ -1,4 +1,8 @@
 /* 
+*  Source file containing implementation of Client functionality
+*
+*  Author: shrikant nimhan shni9045@colorado.edu
+*
 *  Attributes:
 *  https://beej.us/guide/bgnet/html/
 *  https://stackoverflow.com/questions/12721246/reading-the-socket-buffer

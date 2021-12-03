@@ -16,7 +16,7 @@ SRCREV = "${AUTOREV}"
 # We reference the "server" directory here to build from the "server" directory
 # in your assignments repo
 S = "${WORKDIR}/git"
-B = "${S}/Temperature_Sensor"
+B = "${S}/Sensors"
 
 # TODO: Add the aesdsocket application and any other files you need to install
 # See http://git.yoctoproject.org/cgit.cgi/poky/plain/meta/conf/bitbake.conf?h=warrior for yocto path prefixes

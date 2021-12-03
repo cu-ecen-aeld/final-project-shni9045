@@ -1,14 +1,14 @@
-/************************************************************************
+/*
 *
 *	Filename: server.c 
 *	
-        Description : Program to send sensor data received from message queue to the client.
+*       Description : Program to send sensor data received from message queue to the client.
 *
 *  
 *	Code References: https://beej.us/guide/bgnet/html/
 *	
 *
-*************************************************************************/
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -30,14 +30,13 @@
 #include <signal.h>
 
 
-//#defines
-
 #define PORT 		"9000"
 #define BACKLOG		5
 #define BUF_SIZE	100
 
 
 int sock_fd;
+int client_fd; 
 bool quit = 0;
 struct mq_attr transmq;
 
@@ -51,6 +50,16 @@ struct fnparam
 mqd_t mq_rx_id;
 int mq_rx_len;
 unsigned int receive_priority;
+
+void close_graceful(){
+
+   
+    	syslog(LOG_DEBUG, "Caught signal, exiting\n");
+	close(client_fd);
+	close(sock_fd);
+    	syslog(LOG_DEBUG, "Closed connection from ");
+
+}
 
 
 static void sighandler(int signo)
@@ -76,7 +85,6 @@ int main(int argc, char* argv[])
 	struct sockaddr_in clientsockaddr;
 	socklen_t addrsize = sizeof(struct sockaddr);
 	int opt = 1;
-	int client_fd; 
     	struct fnparam f_param;
 	char IP[20] = {0};
      
@@ -128,7 +136,7 @@ int main(int argc, char* argv[])
     	if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
 	{
         	perror("setsockopt");
-		goto exitclose;    
+		close_graceful();   
 	}
 
 	/* Setting this for use with getaddrinfo for bind() */
@@ -142,7 +150,7 @@ int main(int argc, char* argv[])
 	{
 		printf("getaddrinfo failed, %s\n", gai_strerror(rc));
 		freeaddrinfo(sockaddrinfo);
-		goto exitclose;
+		close_graceful();
 	}
 	/* Bind */
 	rc = bind(sock_fd, sockaddrinfo->ai_addr, sizeof(struct sockaddr));
@@ -152,7 +160,7 @@ int main(int argc, char* argv[])
 	{
 		printf("bind failed, %s\n", strerror(errno));
 		freeaddrinfo(sockaddrinfo);
-		goto exitclose;
+		close_graceful();
 	}
 
 	freeaddrinfo(sockaddrinfo);
@@ -164,7 +172,7 @@ int main(int argc, char* argv[])
 	if(rc == -1)
 	{
 		perror("listen failed\n");
-		goto exitclose;
+		close_graceful();
 	}
 
 
@@ -188,7 +196,7 @@ int main(int argc, char* argv[])
 		if(client_fd == -1)
 		{
 			perror("accept failed\n");
-			goto exitclose;
+			close_graceful();
 		}
 		
 		/* sockaddr to IP string */
@@ -200,9 +208,9 @@ int main(int argc, char* argv[])
 		strcpy(f_param.f_IP, IP);
 
                struct fnparam *l_fnp = (struct fnparam*) &f_param;
+               
+               while (1){
 
-
-		
 	        mq_rx_len = mq_receive(mq_rx_id, txbuf, sizeof(double)+sizeof(int), &receive_priority);
 		if(mq_rx_len < 0)
 			perror("Did not receive any data");
@@ -222,14 +230,8 @@ int main(int argc, char* argv[])
 			perror("send failed\n");
 			break;
 		}
+	   }
 	}
-
-exitclose:
-
-    	syslog(LOG_DEBUG, "Caught signal, exiting\n");
-	close(client_fd);
-	close(sock_fd);
-    	syslog(LOG_DEBUG, "Closed connection from %s\n", f_param.f_IP);
 
 	return 0;
 
