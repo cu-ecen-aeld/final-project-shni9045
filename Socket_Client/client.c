@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 #include <fcntl.h>
 
 /* GPIO Macro Definitions*/
@@ -33,6 +34,37 @@
 
 #define SLEEP_TIME			(5*(USEC_TO_MSEC)*(MSEC_TO_SEC))
 
+
+// Cient Socket fd
+int clientfd;
+
+// Variable to start or stop accepting connections
+int shutoff=0;	
+
+void close_graceful(){
+
+	shutoff = 1;
+
+	close(clientfd);
+
+	printf("-------------------Exiting Program--------------\n");
+
+}
+
+static void sig_handler(int signo){
+
+
+    if(signo == SIGINT || signo==SIGTERM) {
+
+
+    shutdown(clientfd,SHUT_RDWR);
+
+    shutoff = 1;
+
+    
+    }
+
+}
 
 static int GPIOExport(int pin)
 {
@@ -78,8 +110,6 @@ static int GPIODirection(int pin, int dir)
 }
 
 
-//client global variables
-int client_socket_fd;
 
 int main(int argc, char *argv[])
 {   
@@ -87,14 +117,13 @@ int main(int argc, char *argv[])
 	int id;
 	float temperature;     
 	
+	char buffer[1024] = {0};
 	char hold_str[200] = {0};
 	char temp_str[20];	
-	char conv_str[20];	
+	char conv_str[20];
+	char IP[20] = {0};	
 
 	int fd,td,wbytes;
-
-	char buffer[1024] = {0};
-	char IP[20] = {0};
 	
 	/*
 	 * Enable GPIO pins
@@ -112,45 +141,73 @@ int main(int argc, char *argv[])
 
 	if(argc != 2)
 	{
-		printf("Usage client_test [IP]\n");
+		printf("Enter Server IP Please:\n");
 		return -1;
 	}
 
+	
 	memcpy(IP, argv[1], strlen(argv[1]));
 	printf("________________CONNECTING TO SERVER____________________ %s\n", IP);
 
 
-	client_socket_fd = socket(AF_INET,SOCK_STREAM,0);
-	if(client_socket_fd < 0)
+	clientfd = socket(AF_INET,SOCK_STREAM,0);
+	if(clientfd < 0)
 	{
-		perror("ERROR - socket():");  
+		perror("ERROR Socket Creation:");  
 	}
 	
-	struct sockaddr_in server_address;
-	server_address.sin_family = AF_INET;
-	server_address.sin_port = htons(PORT_NO);
+	struct sockaddr_in serveraddr;
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_port = htons(PORT_NO);
 	
-	int client_inet_pton_fd = inet_pton(AF_INET,IP,&server_address.sin_addr);
-	if(client_inet_pton_fd <= 0)
+	int inetfd = inet_pton(AF_INET,IP,&serveraddr.sin_addr);
+	if(inetfd <= 0)
 	{
-		perror("ERROR - inet_pton():");  
+		perror("ERROR inet pton() call:");  
+		close_graceful();
+		return -1;
 		
 	}
 	
-	int client_connect_fd = connect(client_socket_fd, (struct sockaddr *)&server_address,sizeof(server_address));
-	if(client_connect_fd < 0)
+	int connection = connect(clientfd, (struct sockaddr *)&serveraddr,sizeof(serveraddr));
+	if(connection < 0)
 	{
-		perror("ERROR - connect():");  
+		perror("ERROR Connect() call:");  
+		close_graceful();
+		return -1;
 
 	}
 
 	printf("_______________INITIALIZATION OF CLIENT COMPLETED___________\n");
 
+	// Setup SIGINT signal handler
+    if(signal(SIGINT,sig_handler) == SIG_ERR){
+        printf("\nError in setting signals");
+        close_graceful();
+        return -1;
+    }
+    
+    // Setup SIGTERM signal handler
+    if(signal(SIGTERM,sig_handler) == SIG_ERR){
+        printf("\nError in setting signals");
+        close_graceful();
+        return -1;
+    }
+
+    // Setup signal mask
+    sigset_t set;
+    sigemptyset(&set);           // empty the set
+
+    // add the signals to the set
+    sigaddset(&set,SIGINT);      
+    sigaddset(&set,SIGTERM);     
+
+
 	
-	while(1)
+	while(!shutoff)
 	{
 		
-		read(client_socket_fd,buffer,sizeof(buffer));
+		read(clientfd,buffer,sizeof(buffer));
 			
 		printf("-----------------FROM SERVER-----------------%s\n",buffer);
 		
@@ -167,7 +224,7 @@ int main(int argc, char *argv[])
 		  
 		    strncpy(temp_str,"",strlen(temp_str));
 		  
-			printf("----Converted Temperature : %.2lf",temperature);
+	    	printf("----Converted Temperature : %.2lf",temperature);
 		
 			sprintf(buf,"%04.2f",temperature);
 		  
@@ -236,6 +293,10 @@ int main(int argc, char *argv[])
 		}
 		                  
 	}
+
+	close_graceful();
+    return 0;
+
 }
 
 
