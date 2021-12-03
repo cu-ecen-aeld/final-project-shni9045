@@ -1,11 +1,12 @@
 /************************************************************************
 *
-*	SERVER PROGRAM
-*	Brief: Program to send sensor data received using message queues to CLIENT.
+*	Filename: server.c 
+*	
+        Description : Program to send sensor data received from message queue to the client.
 *
-*   Author: Dhruv Mehta
+*  
 *	Code References: https://beej.us/guide/bgnet/html/
-*	Beej's Guide to Network Programming
+*	
 *
 *************************************************************************/
 #include <stdio.h>
@@ -25,18 +26,20 @@
 #include <stdbool.h>
 #include <sys/queue.h>
 #include <time.h>
+#include <mqueue.h>
 #include <signal.h>
 
-#include <mqueue.h>
+
+//#defines
 
 #define PORT 		"9000"
 #define BACKLOG		5
 #define BUF_SIZE	100
 
-/* Socket File descriptor */
-int socket_fd;
-bool quitpgm = 0;
-struct mq_attr sendmq;
+
+int sock_fd;
+bool quit = 0;
+struct mq_attr transmq;
 
 struct fnparam
 {
@@ -44,62 +47,26 @@ struct fnparam
 	char f_IP[20];
 };
     
-mqd_t mq_receive_desc;
-int mq_receive_len;
-//char buffer[ sizeof(double)];
-unsigned int rx_prio;
+
+mqd_t mq_rx_id;
+int mq_rx_len;
+unsigned int receive_priority;
 
 
 static void sighandler(int signo)
 {
 	if((signo == SIGINT) || (signo == SIGTERM))
 	{
-		if(shutdown(socket_fd, SHUT_RDWR))
+		if(shutdown(sock_fd, SHUT_RDWR))
 		{
 			perror("Failed on shutdown()");
 		}
-		quitpgm = 1;
+		quit = 1;
 	}
 
 }
 
-void TxRxData(void *thread_param)
-{
-	struct fnparam *l_fnp = (struct fnparam*) thread_param;
 
-	char txbuf[sizeof(double)+sizeof(int)];
-	
-	char buffer[100];
-	
-	double temperature;
-	int id;
-
-	while(1)
-	{
-		mq_receive_len = mq_receive(mq_receive_desc, txbuf, sizeof(double)+sizeof(int), &rx_prio);
-		if(mq_receive_len < 0)
-			perror("Did not receive any data");
-			
-	        memcpy(&temperature, txbuf, sizeof(double));
-		memcpy(&id, txbuf + sizeof(double), sizeof(int));
-		
-		
-		sprintf(buffer, "TC%.2lf\nID%02d\n", temperature, id);
-		
-		/* Send data read from file to client */
-		int sent_bytes = send(l_fnp->f_client_fd, buffer, strlen(buffer)+1, 0);
-		
-		/* Error in sending */
-		if(sent_bytes == -1)
-		{
-			perror("send failed\n");
-			return;
-		}
-	}
-
-
-
-} // TxRxThread end
 
 
 int main(int argc, char* argv[])
@@ -112,6 +79,14 @@ int main(int argc, char* argv[])
 	int client_fd; 
     	struct fnparam f_param;
 	char IP[20] = {0};
+     
+
+	char txbuf[sizeof(double)+sizeof(int)];
+	
+	char buffer[100];
+	
+	double temperature;
+	int id;
 
 	memset(&hints, 0, sizeof(hints));
 
@@ -140,20 +115,20 @@ int main(int argc, char* argv[])
 	}
 
   	/* Create socket endpoint */ 
-	socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+	sock_fd = socket(PF_INET, SOCK_STREAM, 0);
 	
 	/* Socket creation failed, return -1 on error */
-	if(socket_fd == -1)
+	if(sock_fd == -1)
 	{
 		printf("Socket creation failed\n");
 		return -1;
 	}
 
 	 /* Forcefully attaching socket to the port 9000 for bind error: address in use */
-    	if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+    	if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
 	{
         	perror("setsockopt");
-		goto cleanexit;    
+		goto exitclose;    
 	}
 
 	/* Setting this for use with getaddrinfo for bind() */
@@ -167,53 +142,53 @@ int main(int argc, char* argv[])
 	{
 		printf("getaddrinfo failed, %s\n", gai_strerror(rc));
 		freeaddrinfo(sockaddrinfo);
-		goto cleanexit;
+		goto exitclose;
 	}
 	/* Bind */
-	rc = bind(socket_fd, sockaddrinfo->ai_addr, sizeof(struct sockaddr));
+	rc = bind(sock_fd, sockaddrinfo->ai_addr, sizeof(struct sockaddr));
 
 	/* Error occurred in bind, return -1 on error */
 	if(rc == -1)
 	{
 		printf("bind failed, %s\n", strerror(errno));
 		freeaddrinfo(sockaddrinfo);
-		goto cleanexit;
+		goto exitclose;
 	}
 
 	freeaddrinfo(sockaddrinfo);
 
 	/* Listen for a connection */
-	rc = listen(socket_fd, BACKLOG);
+	rc = listen(sock_fd, BACKLOG);
 
 	/* Error occurred in listen, return -1 on error */
 	if(rc == -1)
 	{
 		perror("listen failed\n");
-		goto cleanexit;
+		goto exitclose;
 	}
 
 
-	mq_receive_desc = mq_open("/temp_sense_mq", O_RDWR, S_IRWXU, &sendmq);
-	if(mq_receive_desc < 0)
+	mq_rx_id = mq_open("/temp_sense_mq", O_RDWR, S_IRWXU, &transmq);
+	if(mq_rx_id < 0)
 	{
 		perror("Reciever MQ failed");
 		exit(-1);
 	} 
 
-	while(!quitpgm)
+	while(!quit)
 	{		
 
 		/* Get the accepted client fd */
-		client_fd = accept(socket_fd, (struct sockaddr *)&clientsockaddr, &addrsize); 
+		client_fd = accept(sock_fd, (struct sockaddr *)&clientsockaddr, &addrsize); 
 
-		if(quitpgm)
+		if(quit)
 			break;
 		
 		/* Error occurred in accept, return -1 on error */
 		if(client_fd == -1)
 		{
 			perror("accept failed\n");
-			goto cleanexit;
+			goto exitclose;
 		}
 		
 		/* sockaddr to IP string */
@@ -223,15 +198,37 @@ int main(int argc, char* argv[])
 
 		f_param.f_client_fd = client_fd;
 		strcpy(f_param.f_IP, IP);
+
+               struct fnparam *l_fnp = (struct fnparam*) &f_param;
+
+
 		
-		TxRxData(&f_param);
+	        mq_rx_len = mq_receive(mq_rx_id, txbuf, sizeof(double)+sizeof(int), &receive_priority);
+		if(mq_rx_len < 0)
+			perror("Did not receive any data");
+			
+	        memcpy(&temperature, txbuf, sizeof(double));
+		memcpy(&id, txbuf + sizeof(double), sizeof(int));
+		
+		
+		sprintf(buffer, "TC%.2lf\nID%02d\n", temperature, id);
+		
+		/* Send data read from file to client */
+		int sent_bytes = send(l_fnp->f_client_fd, buffer, strlen(buffer)+1, 0);
+		
+		/* Error in sending */
+		if(sent_bytes == -1)
+		{
+			perror("send failed\n");
+			break;
+		}
 	}
 
-cleanexit:
+exitclose:
 
     	syslog(LOG_DEBUG, "Caught signal, exiting\n");
 	close(client_fd);
-	close(socket_fd);
+	close(sock_fd);
     	syslog(LOG_DEBUG, "Closed connection from %s\n", f_param.f_IP);
 
 	return 0;
