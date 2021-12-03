@@ -42,7 +42,7 @@ struct mq_attr mq_attr;
 #define MLX90614_DEVICE_ADDRESS		(0x5A)
 #define I2C_DEV_PATH 			("/dev/i2c-1")
 
-#define SLEEP_DURATION 			(750000)
+#define SLEEP_DURATION 			(500000)
 
 
 #ifndef I2C_SMBUS_READ 
@@ -393,44 +393,44 @@ int main()
     	}
 	
 	// Temperature COnversion as per datasheet
-     	double temp = (double) data.word;
-    	temp = (temp * 0.02)-0.01;
-    	temp = temp - 273.15;
-    	
-    	// Display result for debug purposes only
-    	printf("Body Temperature of Person  = %04.2f\n", temp);
-    	
-    	led_on_fingerprint();
-        printf("Press finger\n");
+	double temp = (double) data.word;
+	temp = (temp * 0.02)-0.01;
+	temp = temp - 273.15;
+	
+	// Display result for debug purposes only
+	printf("Body Temperature of Person  = %04.2f\n", temp);
+	
+	led_on_fingerprint();
+	printf("Press finger\n");
 
-        /*****Finger Print Sensor******/
+	/*****Finger Print Sensor******/
 
-        if(is_Finger_pressed())
-        {
-            printf("Finger is pressed\n");
-            int id = identify_fingerprint();
+	if(is_Finger_pressed())
+	{
+		printf("Finger is pressed\n");
+		int id = identify_fingerprint();
 
-            printf("******ID****** === %d\n",id);
+		printf("******ID****** === %d\n",id);
 
-            // Create string buffer of temperature value
-            //sprintf(send_buffer,"%04.2f%d",temp,id);
+		// Create string buffer of temperature value
+		//sprintf(send_buffer,"%04.2f%d",temp,id);
 
-            memcpy(send_buffer, &temp, sizeof(double));
-            memcpy(send_buffer + sizeof(double), &id, sizeof(int));
+		memcpy(send_buffer, &temp, sizeof(double));
+		memcpy(send_buffer + sizeof(double), &id, sizeof(int));
 
-        if ((nbytes = mq_send( mymq, send_buffer, sizeof(double)+sizeof(int), 1)) == -1 )
-         {
-             perror("MQ SEND");
-             printf("Error in  Sending data over  Message Queue\n");  
-             return -1;
-       
-         }
-       
-          else printf("Message data sent over Message Queue successfully\n");       
+	if ((nbytes = mq_send( mymq, send_buffer, sizeof(double)+sizeof(int), 1)) == -1 )
+		{
+			perror("MQ SEND");
+			printf("Error in  Sending data over  Message Queue\n");  
+			return -1;
+	
+		}
+	
+		else printf("Message data sent over Message Queue successfully\n");       
 
-         }					
+		}					
 
-    	usleep(SLEEP_DURATION);
+	usleep(SLEEP_DURATION);
 
 
 

@@ -44,11 +44,16 @@ int clientfd;
 // Variable to start or stop accepting connections
 int shutoff=0;	
 
+static int GPIOUnexport(int pin);
+
 void close_graceful(){
 
 	shutoff = 1;
 
 	close(clientfd);
+
+	if (-1 == GPIOUnexport(POUT) || -1 == GPIOUnexport(PIN))
+	printf("Error in Unexporting GPIO\n");
 
 	printf("-------------------Exiting Program--------------\n");
 
@@ -82,6 +87,23 @@ static int GPIOExport(int pin)
 		return(-1);
 	}
 
+	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
+	write(fd, buffer, bytes_written);
+	close(fd);
+	return(0);
+}
+
+
+static int GPIOUnexport(int pin)
+{
+	char buffer[BUFFER_MAX];
+	ssize_t bytes_written;
+	int fd;
+	fd = open("/sys/class/gpio/unexport", O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open unexport for writing!\n");
+		return(-1);
+	}
 	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
 	write(fd, buffer, bytes_written);
 	close(fd);

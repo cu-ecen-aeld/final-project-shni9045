@@ -7,7 +7,7 @@ DataProvider::DataProvider()
 {
     QObject::connect(&timer, &QTimer::timeout,
 		     this, &DataProvider::handleTimer);
-    timer.setInterval(1000);                     // 1 second interval
+    timer.setInterval(750);                     // 1 second interval
     timer.start();
 }
 
