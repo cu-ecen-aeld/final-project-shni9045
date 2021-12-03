@@ -1,8 +1,13 @@
 /* 
-* Source file containing implementation of user space I2C driver for MLX90614 body temperature sensor
+* Source file containing implementation of Client Sensor Communication
 * Attributes : https://olegkutkov.me/2017/08/10/mlx90614-raspberry/
+*              https://classes.colorado.edu/?keyword=ECEN%205623&srcdb=2214 (message queues)
 *
 * Modified - shni9045@colorado.edu
+* Message Queue Communication : shrikant nimhan
+* Temperature Sensor : shrikant nimhan
+* Fingerpritn Sensor : chirayu thakur 
+* 
 */
 #include <sys/ioctl.h>
 #include <sys/types.h>

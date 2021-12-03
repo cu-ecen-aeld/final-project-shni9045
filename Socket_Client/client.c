@@ -1,7 +1,10 @@
 /* 
- * Attributes :
- *
- */
+*  Attributes:
+*  https://beej.us/guide/bgnet/html/
+*  https://stackoverflow.com/questions/12721246/reading-the-socket-buffer
+*  https://stackoverflow.com/questions/8436898/realloc-invalid-next-size-when-reallocating-to-make-space-for-strcat-on-char
+*
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
