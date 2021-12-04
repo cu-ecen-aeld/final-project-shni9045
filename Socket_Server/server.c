@@ -40,10 +40,10 @@ int client_fd;
 bool quit = 0;
 struct mq_attr transmq;
 
-struct fnparam
+struct fparam
 {
-	int f_client_fd;
-	char f_IP[20];
+	int client_id;
+	char f_InternetProtocol[20];
 };
     
 
@@ -83,9 +83,9 @@ int main(int argc, char* argv[])
 	struct addrinfo *sockaddrinfo;
 	struct addrinfo hints;
 	struct sockaddr_in clientsockaddr;
-	socklen_t addrsize = sizeof(struct sockaddr);
+	socklen_t addrlength = sizeof(struct sockaddr);
 	int opt = 1;
-    	struct fnparam f_param;
+    	struct fparam f_param;
 	char IP[20] = {0};
      
 
@@ -102,60 +102,62 @@ int main(int argc, char* argv[])
 
 	if(argc != 2)
 	{
-		printf("usage socketserver [IP]\n");	
+		printf("socketserver IP usage\n");	
 		return -1;
 	}
 
 	memcpy(IP, argv[1], strlen(argv[1]));
-	printf("Server's IP address: %s\n",IP);
+	printf("IP address of Server is: %s\n",IP);
 
-	/* Setting up signal handlers SIGINT and SIGTERM */
+	/* Set up signal handlers for signals  SIGINT and SIGTERM */
 	if(signal(SIGINT, sighandler) == SIG_ERR)
 	{
-		printf("Cannot handle SIGINT\n");
+		printf("SIGINT failed\n");
 		return -1;
 	}
 
 	if(signal(SIGTERM, sighandler) == SIG_ERR)
 	{
-		printf("Cannot handle SIGTERM\n");
+		printf("SIGTERM failed\n");
 		return -1;
 	}
 
   	/* Create socket endpoint */ 
 	sock_fd = socket(PF_INET, SOCK_STREAM, 0);
 	
-	/* Socket creation failed, return -1 on error */
+	/* Socket creation failed */
 	if(sock_fd == -1)
 	{
-		printf("Socket creation failed\n");
+		printf("Failed to create Socket\n");
 		return -1;
 	}
 
-	 /* Forcefully attaching socket to the port 9000 for bind error: address in use */
+	
     	if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
 	{
         	perror("setsockopt");
 		close_graceful();   
 	}
 
-	/* Setting this for use with getaddrinfo for bind() */
+	
 	hints.ai_family = PF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags =  AI_NUMERICHOST;
 
 	int rc = getaddrinfo(IP, PORT, &hints, &sockaddrinfo);
-	/* Error occurred in getaddrinfo, return -1 on error */
+	
+         /* Error in getaddrinfo */
 	if(rc != 0)
 	{
 		printf("getaddrinfo failed, %s\n", gai_strerror(rc));
 		freeaddrinfo(sockaddrinfo);
 		close_graceful();
 	}
-	/* Bind */
+
+
 	rc = bind(sock_fd, sockaddrinfo->ai_addr, sizeof(struct sockaddr));
 
-	/* Error occurred in bind, return -1 on error */
+	
 	if(rc == -1)
 	{
 		printf("bind failed, %s\n", strerror(errno));
@@ -165,10 +167,10 @@ int main(int argc, char* argv[])
 
 	freeaddrinfo(sockaddrinfo);
 
-	/* Listen for a connection */
+	
 	rc = listen(sock_fd, BACKLOG);
 
-	/* Error occurred in listen, return -1 on error */
+	
 	if(rc == -1)
 	{
 		perror("listen failed\n");
@@ -177,6 +179,9 @@ int main(int argc, char* argv[])
 
 
 	mq_rx_id = mq_open("/temp_sense_mq", O_RDWR, S_IRWXU, &transmq);
+        
+        /* Message queue open failed */
+
 	if(mq_rx_id < 0)
 	{
 		perror("Reciever MQ failed");
@@ -186,34 +191,34 @@ int main(int argc, char* argv[])
 	while(!quit)
 	{		
 
-		/* Get the accepted client fd */
-		client_fd = accept(sock_fd, (struct sockaddr *)&clientsockaddr, &addrsize); 
+		/* Obtain client fd */
+		client_fd = accept(sock_fd, (struct sockaddr *)&clientsockaddr, &addrlength); 
 
 		if(quit)
 			break;
 		
-		/* Error occurred in accept, return -1 on error */
+		/* Error at accept */
 		if(client_fd == -1)
 		{
-			perror("accept failed\n");
+			perror("accept call failed\n");
 			close_graceful();
 		}
 		
-		/* sockaddr to IP string */
+		
 		char *IP = inet_ntoa(clientsockaddr.sin_addr);
-		/* Log connection IP */
-		syslog(LOG_DEBUG, "Accepted connection from %s\n", IP);
+		
+		syslog(LOG_DEBUG, "Accepted connection from client %s\n", IP);
 
-		f_param.f_client_fd = client_fd;
-		strcpy(f_param.f_IP, IP);
+		f_param.client_id = client_fd;
+		strcpy(f_param.f_InternetProtocol, IP);
 
-               struct fnparam *l_fnp = (struct fnparam*) &f_param;
+               struct fparam *l_fnp = (struct fparam*) &f_param;
                
                while (1){
 
 	        mq_rx_len = mq_receive(mq_rx_id, txbuf, sizeof(double)+sizeof(int), &receive_priority);
 		if(mq_rx_len < 0)
-			perror("Did not receive any data");
+			perror("Data not received ");
 			
 	        memcpy(&temperature, txbuf, sizeof(double));
 		memcpy(&id, txbuf + sizeof(double), sizeof(int));
@@ -222,12 +227,12 @@ int main(int argc, char* argv[])
 		sprintf(buffer, "TC%.2lf\nID%02d\n", temperature, id);
 		
 		/* Send data read from file to client */
-		int sent_bytes = send(l_fnp->f_client_fd, buffer, strlen(buffer)+1, 0);
+		int sent_bytes = send(l_fnp->client_id, buffer, strlen(buffer)+1, 0);
 		
 		/* Error in sending */
 		if(sent_bytes == -1)
 		{
-			perror("send failed\n");
+			perror("Failed to send Bytes\n");
 			break;
 		}
 	   }
