@@ -1,3 +1,10 @@
+/*
+* Header file for Values class
+* Author - @shrikant nimhan shni9045@colorado.edu
+*
+*/
+
+
 #ifndef VALUES_H
 #define VALUES_H
 
@@ -14,7 +21,7 @@ class QLabel;
 
 
 /*
-* Values Class to handle updated temperature value & other labels
+* Values Class to handle updated temperature value, update fingerprint ID and other labels in window
 *
 */
 
@@ -27,8 +34,8 @@ public:
 
 public slots:
 
-    void handleValueChanged(float temp);
-    void handleIdChanged(int id);
+    void handleValueChanged(float temp);                    // Member function to update displayed temperature value
+    void handleIdChanged(int id);                           // Member function to handle received ID from fingerprint sensor
 
 private:
     QLabel *temperature_v;

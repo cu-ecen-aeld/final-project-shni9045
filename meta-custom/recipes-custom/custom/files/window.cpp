@@ -1,3 +1,9 @@
+/*
+* C++ source file containing impplementation for handling main GUI window
+* Author - @shrikant nimhan shni9045@colorado.edu
+*
+*/
+
 #include <QtWidgets>
 #include <QMessageBox>
 
@@ -34,18 +40,34 @@ Window::Window()
 
     setWindowTitle(tr("AESD_FINAL_PROJECT"));       // Window Title
 }
-// Memeber function to handle temperature value
+/* 
+* Member function to handle temperature value
+* PARAMETERS : Curent temperature value
+* RETURNS    : NONE
+*
+*/
 void Window::handleValueChanged(float temp)
 {
     values->handleValueChanged(temp);
 }
 
-// Memeber function to handle fingerprint id
+/* 
+* Member function to handle fingerprint id
+* PARAMETERS : Curent fingerprint id
+* RETURNS    : NONE
+*
+*/
 void Window::handleIdChanged(int id)
 {
     values->handleIdChanged(id);
 }
 
+/* 
+* Member function to handle door open/close button by toggling GPIO pins
+* PARAMETERS : NONE
+* RETURNS    : NONE
+*
+*/
 void Window::handle_doorbutton()
 {
     QMessageBox::about(this,"Message","Relay Is Actuated");
@@ -103,10 +125,19 @@ void Window::handle_doorbutton()
 
 }
 
+
+/* 
+* Member function to handle User Log button by displaying timestamped User login data
+* PARAMETERS : NONE
+* RETURNS    : NONE
+*
+*/
 void Window::handle_modebutton()
 {
     QMessageBox *msgbox = new QMessageBox;
+
     QFile *file = new QFile ("/var/tmp/idlog.txt");
+    
     if (file->open (QIODevice::ReadOnly) == true)
     {
     msgbox->setText (QString (file->readAll ()));
